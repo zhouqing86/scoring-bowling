@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Frame {
+public class Frame implements IFrame{
 
   private List<Integer> _ballThrowScores = new ArrayList<Integer>();
-  private final int MAX_SCORE_IN_A_FRAME = 10;
   private int _score = 0;
   private FrameStatus _status = FrameStatus.INCOMPLETE;
-  private int recordedThrows = 0;
+
+  protected final int MAX_SCORE_IN_A_THROW = 10;
 
   public void setStatus(FrameStatus _status) {
     this._status = _status;
@@ -20,12 +20,12 @@ public class Frame {
     return _status;
   }
 
-  public int getRecordedThrows() {
-    return recordedThrows;
-  }
-
   public int getScore() {
     return _score;
+  }
+
+  public int scoreCanBeUsedByOtherFrame() {
+    return getScore();
   }
 
   public List<Integer> getBallThrowScores() {
@@ -35,11 +35,11 @@ public class Frame {
   public void throwABall(int score) {
     _ballThrowScores.add(score);
     _score += score;
-    updateStatusAndThrows();
+    updateStatus();
   }
 
   public void addScoreFromFrame(Frame frame, boolean isNeighborhood) {
-    if(isNeighborhood && isStrike()) _score += frame.getScore();
+    if(isNeighborhood && isStrike()) _score += frame.scoreCanBeUsedByOtherFrame();
     if(isNeighborhood && isSpare()) _score += frame.getBallThrowScores().get(0);
     if(!isNeighborhood && isStrike()) _score += frame.getBallThrowScores().get(0);
   }
@@ -65,19 +65,17 @@ public class Frame {
     return _status == FrameStatus.INCOMPLETE;
   }
 
-  private void updateStatusAndThrows() {
+  public void updateStatus() {
     switch (_ballThrowScores.size()) {
       case 1:
-        recordedThrows = 1;
-        if(_ballThrowScores.get(0) == MAX_SCORE_IN_A_FRAME) {
+        if(_ballThrowScores.get(0) == MAX_SCORE_IN_A_THROW) {
           _status = FrameStatus.STRIKE;
           return;
         }
         _status = FrameStatus.INCOMPLETE;
         break;
       case 2:
-        recordedThrows = 2;
-        if(_ballThrowScores.get(0) + _ballThrowScores.get(1) == MAX_SCORE_IN_A_FRAME){
+        if(_ballThrowScores.get(0) + _ballThrowScores.get(1) == MAX_SCORE_IN_A_THROW){
           _status = FrameStatus.SPARE;
           return;
         }

@@ -14,10 +14,10 @@ public class BowlingGameTest extends TestCase {
         game = new BowlingGame();
     }
 
-    public void testDontAddFrameWhenFrameIsIncomplete(){
+    public void testAddFrameWhenFrameIsIncomplete(){
         Frame frame2  = new Frame();
         game.addFrame(frame2);
-        assertEquals(0,game.getFrames().size());
+        assertEquals(1,game.getFrames().size());
     }
 
     public void testAddFrameWhenFrameIsNotIncomplete() {
@@ -50,6 +50,18 @@ public class BowlingGameTest extends TestCase {
         assertEquals(38, game.getCurrentScore());
     }
 
+    public void testThrowBallWillGenerateRelatedFrame() {
+        game.throwABall(1);
+        assertEquals(1,game.getFrames().size());
+        game.throwABall(9);
+        assertEquals(1,game.getFrames().size());
+        game.throwABall(9);
+        assertEquals(2,game.getFrames().size());
+        game.throwABall(1);
+        assertEquals(2,game.getFrames().size());
+        assertEquals(29,game.getCurrentScore());
+
+    }
 
     @Override
     protected void tearDown() throws Exception {
